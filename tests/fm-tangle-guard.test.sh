@@ -233,6 +233,58 @@ test_spawn_isolation_foreign_repo_abort() {
   pass "fm-spawn: aborts when the resolved worktree belongs to a different repository"
 }
 
+# --- GUARD 1b'': own-checkout identity refusal -------------------------------
+
+# The isolation conditions now refuse foreign-repository checkouts, but the one
+# directory whose pollution is fleet-wide - firstmate's own running checkout -
+# also carries a second, independent identity refusal
+# (spawn_assert_worktree_not_own_root) ahead of any task wiring. The only path
+# that reaches it is a worktree that IS a legitimate linked worktree of the
+# spawning project while also being the directory firstmate runs from, so this
+# stages exactly that shape: FM_ROOT_OVERRIDE adopts a linked worktree of the
+# project and the pane reports that same worktree. On the 2026-09-29 leak the
+# claude-hook quartet for a dead task landed in that checkout's
+# .claude/settings.local.json, so the assertions pin the refusal, its message,
+# and the untouched settings file.
+test_spawn_own_root_identity_abort() {
+  local home proj ownroot fakebin config excl out status
+  home="$TMP_ROOT/spawn-ownroot-home"
+  mkdir -p "$home/data" "$home/user-home"
+  proj=$(make_repo "$TMP_ROOT/spawn-ownroot-proj")
+  ownroot="$TMP_ROOT/spawn-ownroot-fm"
+  git -C "$proj" worktree add -q --detach "$ownroot" >/dev/null 2>&1
+  # Early spawn phases call $FM_ROOT/bin tools; keep them resolvable.
+  ln -s "$ROOT/bin" "$ownroot/bin"
+  # Keep the fixture invisible to the freshen cleanliness check: info/exclude
+  # resolves through the common git dir even for a linked worktree.
+  excl=$(git -C "$ownroot" rev-parse --git-path info/exclude)
+  mkdir -p "$(dirname "$excl")"
+  printf 'bin\n.claude/\n' >> "$excl"
+  fakebin=$(make_spawn_fakebin "$TMP_ROOT/spawn-ownroot-fake" claude)
+  fm_test_fake_sleep_noop "$fakebin"
+  config="$TMP_ROOT/spawn-ownroot-claude"
+  mkdir -p "$config"
+  fm_test_spawn_brief "$home" ownroot-ii9
+
+  # fm_test_run_spawn pins FM_ROOT_OVERRIDE empty, so this inlines its env with
+  # FM_ROOT_OVERRIDE naming the pane-reported worktree.
+  out=$(FM_ROOT_OVERRIDE="$ownroot" FM_HOME="$home" HOME="$home/user-home" \
+    CLAUDE_CONFIG_DIR="$config" \
+    FM_STATE_OVERRIDE="$home/state" FM_DATA_OVERRIDE="$home/data" \
+    FM_PROJECTS_OVERRIDE="$home/projects" FM_CONFIG_OVERRIDE="$home/config" \
+    FM_SPAWN_NO_GUARD=1 FM_FAKE_PANE_PATH="$ownroot" TMUX="fake,1,0" \
+    PATH="$fakebin:$PATH" \
+    "$ROOT/bin/fm-spawn.sh" ownroot-ii9 "$proj" claude --mode no-mistakes --yolo off 2>&1)
+  status=$?
+  expect_code 1 "$status" "spawn adopting firstmate own checkout should abort"
+  assert_contains "$out" "firstmate's own checkout" "own-root spawn lacked the identity refusal"
+  if [ -e "$ownroot/.claude/settings.local.json" ]; then
+    assert_no_grep "UserPromptSubmit" "$ownroot/.claude/settings.local.json" \
+      "own-root spawn leaked the claude-hook quartet into the running checkout"
+  fi
+  pass "fm-spawn: refuses to write task wiring when the resolved worktree is firstmate's own checkout"
+}
+
 # --- GUARD 1c: fm-spawn tmux window construction ----------------------------
 
 # The prevention guard also depends on fm-spawn building robust tmux commands
@@ -321,4 +373,5 @@ test_bootstrap_line
 test_brief_assertion_precedes_branch
 test_spawn_isolation_abort
 test_spawn_isolation_foreign_repo_abort
+test_spawn_own_root_identity_abort
 test_spawn_tmux_window_construction
