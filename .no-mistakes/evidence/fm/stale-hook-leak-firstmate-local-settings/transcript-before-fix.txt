@@ -1,0 +1,13 @@
+===================================================================
+[BEFORE-FIX-base-42dd906] fm-spawn under test: /tmp/base-mirror/fm-spawn.sh
+scenario: pane reports firstmate's own checkout (/tmp/leak-e2e-before/own-checkout)
+===================================================================
+warning: /tmp/leak-e2e-before/home/data/leak-e2e-q7/launch-brief.md records no ship branch; defaulting to legacy branch fm/leak-e2e-q7
+warning: /tmp/leak-e2e-before/home/data/leak-e2e-q7/launch-brief.md records no delivery contract line (scaffolded before ship briefs recorded one); launching on the explicit --mode no-mistakes - confirm its definition of done matches
+error: could not resolve the task-channel directories for leak-e2e-q7's claude --add-dir grant
+-------------------------------------------------------------------
+[BEFORE-FIX-base-42dd906] spawn exit code: 1
+[BEFORE-FIX-base-42dd906] LEAK CHECK: /tmp/leak-e2e-before/own-checkout/.claude/settings.local.json EXISTS - contents:
+{"hooks":{"UserPromptSubmit":[{"hooks":[{"type":"command","command":"'/tmp/leak-e2e-before/own-checkout/bin/fm-busy-event.sh' apply '/tmp/leak-e2e-before/home/state' 'leak-e2e-q7' busy --gen 'g1791147456.2441988.12338' --source claude-hook --event user-prompt-submit 2>/dev/null || true"}]}],"Stop":[{"hooks":[{"type":"command","command":"touch '/tmp/leak-e2e-before/home/state/leak-e2e-q7.turn-ended'; '/tmp/leak-e2e-before/own-checkout/bin/fm-busy-event.sh' apply '/tmp/leak-e2e-before/home/state' 'leak-e2e-q7' idle --gen 'g1791147456.2441988.12338' --source claude-hook --event stop 2>/dev/null || true"}]}],"StopFailure":[{"hooks":[{"type":"command","command":"'/tmp/leak-e2e-before/own-checkout/bin/fm-busy-event.sh' apply '/tmp/leak-e2e-before/home/state' 'leak-e2e-q7' idle --gen 'g1791147456.2441988.12338' --source claude-hook --event stop-failure 2>/dev/null || true"}]}],"SessionEnd":[{"hooks":[{"type":"command","command":"'/tmp/leak-e2e-before/own-checkout/bin/fm-busy-event.sh' apply '/tmp/leak-e2e-before/home/state' 'leak-e2e-q7' idle --gen 'g1791147456.2441988.12338' --source claude-hook --event session-end 2>/dev/null || true"}]}]}}
+[BEFORE-FIX-base-42dd906] RESULT: claude-hook quartet LEAKED into firstmate's own checkout (the 2026-09-29 bug)
+

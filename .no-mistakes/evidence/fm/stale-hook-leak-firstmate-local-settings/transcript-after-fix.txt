@@ -1,0 +1,12 @@
+===================================================================
+[AFTER-FIX-target-cc9ccf4] fm-spawn under test: /home/lance/.no-mistakes/worktrees/d9409d389edc/01M43KMJ9PF6KGBJXQBX2Q9C5V/bin/fm-spawn.sh
+scenario: pane reports firstmate's own checkout (/tmp/leak-e2e-after/own-checkout)
+===================================================================
+warning: /tmp/leak-e2e-after/home/data/leak-e2e-q7/launch-brief.md records no ship branch; defaulting to legacy branch fm/leak-e2e-q7
+warning: /tmp/leak-e2e-after/home/data/leak-e2e-q7/launch-brief.md records no delivery contract line (scaffolded before ship briefs recorded one); launching on the explicit --mode no-mistakes - confirm its definition of done matches
+error: task leak-e2e-q7 resolved worktree '/tmp/leak-e2e-after/own-checkout' is firstmate's own checkout; refusing to write task wiring or refresh a base there
+-------------------------------------------------------------------
+[AFTER-FIX-target-cc9ccf4] spawn exit code: 1
+[AFTER-FIX-target-cc9ccf4] LEAK CHECK: /tmp/leak-e2e-after/own-checkout/.claude/settings.local.json does not exist - no task wiring written
+[AFTER-FIX-target-cc9ccf4] RESULT: own checkout left untouched
+
