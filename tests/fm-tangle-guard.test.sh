@@ -205,6 +205,34 @@ test_spawn_isolation_abort() {
   pass "fm-spawn: aborts unless the resolved worktree is a genuine, isolated worktree"
 }
 
+# --- GUARD 1b': foreign-repository checkout ---------------------------------
+
+# The isolation conditions must reject a checkout of a DIFFERENT repository,
+# not just the spawning project's own paths. This is the 2026-09-29 leak shape:
+# on WSL a brand-new window's pane read transiently reported firstmate's own
+# checkout - a real, clean worktree root of an unrelated repository - during a
+# spawn of another project; the adopted path passed a comparison that only
+# knew the spawning project, and the task's claude hooks plus a fetch+reset
+# base refresh landed in the primary checkout's .claude and git metadata.
+test_spawn_isolation_foreign_repo_abort() {
+  local home proj foreign fakebin out status
+  home="$TMP_ROOT/spawn-foreign-home"
+  mkdir -p "$home/data"
+  proj=$(make_repo "$TMP_ROOT/spawn-foreign-proj")
+  foreign=$(make_repo "$TMP_ROOT/spawn-foreign-wt")
+  fakebin=$(make_spawn_fakebin "$TMP_ROOT/spawn-foreign-fake")
+  fm_test_fake_sleep_noop "$fakebin"
+
+  # Abort: the pane resolves to the root checkout of an unrelated repository.
+  out=$(run_spawn "$home" abort-foreign-repo-hh8 "$proj" "$foreign" "$fakebin"); status=$?
+  expect_code 1 "$status" "spawn into another repository's checkout should abort"
+  assert_contains "$out" "did not enter an isolated worktree" "foreign-repo spawn lacked the isolation error"
+  assert_contains "$out" "checkout of a different repository" "foreign-repo spawn did not say why the path was rejected"
+  assert_absent "$home/state/abort-foreign-repo-hh8.meta" "aborted foreign-repo spawn must not record meta"
+
+  pass "fm-spawn: aborts when the resolved worktree belongs to a different repository"
+}
+
 # --- GUARD 1c: fm-spawn tmux window construction ----------------------------
 
 # The prevention guard also depends on fm-spawn building robust tmux commands
@@ -292,4 +320,5 @@ test_guard_banner
 test_bootstrap_line
 test_brief_assertion_precedes_branch
 test_spawn_isolation_abort
+test_spawn_isolation_foreign_repo_abort
 test_spawn_tmux_window_construction
