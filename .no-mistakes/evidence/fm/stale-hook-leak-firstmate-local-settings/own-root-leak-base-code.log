@@ -1,0 +1,21 @@
+=== fixture ===
+firstmate running checkout (FM_ROOT): /tmp/ownroot-leak-evidence.noB0XB/ownroot-fm
+spawning project:                     /tmp/ownroot-leak-evidence.noB0XB/ownroot-proj
+checkout HEAD before spawn:           5e293d62c3daa9327afa9d876f8e3c4e932fda21
+origin/main (advanced past HEAD):     7163c17bc8338f1a159b5ea1a610fc6aed1d7132
+=== spawn exit: 1 ===
+=== spawn output (tail) ===
+warning: /tmp/ownroot-leak-evidence.noB0XB/ownroot-home/data/ownroot-ii9/launch-brief.md records no ship branch; defaulting to legacy branch fm/ownroot-ii9
+warning: /tmp/ownroot-leak-evidence.noB0XB/ownroot-home/data/ownroot-ii9/launch-brief.md records no delivery contract line (scaffolded before ship briefs recorded one); launching on the explicit --mode no-mistakes - confirm its definition of done matches
+error: could not resolve the task-channel directories for ownroot-ii9's claude --add-dir grant
+=== firstmate's own checkout AFTER the spawn ===
+HEAD before: 5e293d62c3daa9327afa9d876f8e3c4e932fda21
+HEAD after:  7163c17bc8338f1a159b5ea1a610fc6aed1d7132
+HEAD: MOVED by base refresh
+FETCH_HEAD: created (a fetch ran in this checkout)
+shared info/exclude: MODIFIED
+file tree: CHANGED
+=== the running checkout's .claude/settings.local.json after the spawn ===
+{"hooks":{"UserPromptSubmit":[{"hooks":[{"type":"command","command":"'/tmp/ownroot-leak-evidence.noB0XB/ownroot-fm/bin/fm-busy-event.sh' apply '/tmp/ownroot-leak-evidence.noB0XB/ownroot-home/state' 'ownroot-ii9' busy --gen 'g1791390542.503675.7501' --source claude-hook --event user-prompt-submit 2>/dev/null || true"}]}],"Stop":[{"hooks":[{"type":"command","command":"touch '/tmp/ownroot-leak-evidence.noB0XB/ownroot-home/state/ownroot-ii9.turn-ended'; '/tmp/ownroot-leak-evidence.noB0XB/ownroot-fm/bin/fm-busy-event.sh' apply '/tmp/ownroot-leak-evidence.noB0XB/ownroot-home/state' 'ownroot-ii9' idle --gen 'g1791390542.503675.7501' --source claude-hook --event stop 2>/dev/null || true"}]}],"StopFailure":[{"hooks":[{"type":"command","command":"'/tmp/ownroot-leak-evidence.noB0XB/ownroot-fm/bin/fm-busy-event.sh' apply '/tmp/ownroot-leak-evidence.noB0XB/ownroot-home/state' 'ownroot-ii9' idle --gen 'g1791390542.503675.7501' --source claude-hook --event stop-failure 2>/dev/null || true"}]}],"SessionEnd":[{"hooks":[{"type":"command","command":"'/tmp/ownroot-leak-evidence.noB0XB/ownroot-fm/bin/fm-busy-event.sh' apply '/tmp/ownroot-leak-evidence.noB0XB/ownroot-home/state' 'ownroot-ii9' idle --gen 'g1791390542.503675.7501' --source claude-hook --event session-end 2>/dev/null || true"}]}]}}
+
+VERDICT: LEAK - a dead task's claude-hook quartet landed in firstmate's own checkout

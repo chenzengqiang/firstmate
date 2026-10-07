@@ -1,0 +1,27 @@
+=== fixture ===
+firstmate running checkout (FM_ROOT): /tmp/ownroot-leak-evidence.KD7VTs/ownroot-fm
+spawning project:                     /tmp/ownroot-leak-evidence.KD7VTs/ownroot-proj
+checkout HEAD before spawn:           f56a651749a52aea5a3118a45e3d9a70e84b2f13
+origin/main (advanced past HEAD):     f2dff9c306dd5f1ce8f2936cf7ad327b3b315c46
+=== spawn exit: 1 ===
+=== spawn output (tail) ===
+warning: /tmp/ownroot-leak-evidence.KD7VTs/ownroot-home/data/ownroot-ii9/launch-brief.md records no ship branch; defaulting to legacy branch fm/ownroot-ii9
+warning: /tmp/ownroot-leak-evidence.KD7VTs/ownroot-home/data/ownroot-ii9/launch-brief.md records no delivery contract line (scaffolded before ship briefs recorded one); launching on the explicit --mode no-mistakes - confirm its definition of done matches
+error: task ownroot-ii9 resolved worktree '/tmp/ownroot-leak-evidence.KD7VTs/ownroot-fm' is firstmate's own checkout; refusing to write task wiring or refresh a base there
+=== firstmate's own checkout AFTER the spawn ===
+HEAD before: f56a651749a52aea5a3118a45e3d9a70e84b2f13
+HEAD after:  f56a651749a52aea5a3118a45e3d9a70e84b2f13
+HEAD: unchanged
+FETCH_HEAD: absent
+shared info/exclude: unchanged
+file tree: byte-identical
+=== the running checkout's .claude/settings.local.json after the spawn ===
+{
+  "permissions": {
+    "allow": [
+      "Bash(git diff:*)"
+    ]
+  }
+}
+
+VERDICT: CLEAN - no task hooks in firstmate's own checkout
